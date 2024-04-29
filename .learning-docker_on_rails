@@ -1,0 +1,18 @@
+Phew, lots of problems with this one
+
+Tried following directions here: https://docs.docker.com/compose/rails/
+
+Never could get it to work. Might try a new one just to see.
+
+Eventually, I just created my rails project on localhost then used a simplified docker file that copied the data from my local project to the container. I followed the instructions on this page (https://medium.com/@guillaumeocculy/setting-up-rails-6-with-postgresql-webpack-on-docker-a51c1044f0e4) which worked great
+
+Some things that tripped me up
+-multiple images were getting into my docker install. For example, i had a ruby 2.7.1 image and a ruby 2.7.2 and the system defaulted to the ruby 2.7.1 image
+-use the docker pull ruby:latest or ruby:[version] to get the right ruby version into docker (to match your gemfile and Dockerfile)
+
+This page is kind of sarcastic/funny but includes some good "best practices" to use with docker files for Ruby. https://lipanski.com/posts/dockerfile-ruby-best-practices
+
+This page is a much longer, more in depth version which contains a flexible argument based docker file: https://evilmartians.com/chronicles/ruby-on-whales-docker-for-ruby-rails-development
+
+
+https://semaphoreci.com/community/tutorials/dockerizing-a-ruby-on-rails-application

@@ -1,0 +1,8 @@
+Using the CLI interface
+-use create to create an application. creates a remote link from the git repository to the remote heroku server
+-use heroku run to run commands
+--to migrate a db in rails heroku run rails db:migrate
+-use heroku run console to get a rails console from the server
+-use heroku restart to restart the app
+-use heroku logs -t to tail the log on your terminal
+
