@@ -1,0 +1,3 @@
+  <%= link_to "#{article.title} by #{article.author.nickname}" + 
+    (" (#{article.click_count})" if defined?(:show_click_count) && :show_click_count), 
+    article, class: 'article_title'%>
