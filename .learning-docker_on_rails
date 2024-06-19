@@ -16,3 +16,16 @@ This page is a much longer, more in depth version which contains a flexible argu
 
 
 https://semaphoreci.com/community/tutorials/dockerizing-a-ruby-on-rails-application
+
+- Always specify version numbers of dependencies (e.g. ruby and any associated gems). Doing so allows you to upgrade in a more intentional, controlled manner
+- Always create a .dockerignore file to avoid leaking any secrets. Does not honor the .gitignore file
+- Group commands so that they aren't run every time which creates additional intermediate images/more space/more cpu required
+- Places the commands that are the most likely to trigger an update (e.g. `copy src/`) at the bottom of the file because Docker will run anything after that
+- Run commands and copy files as a non root user by adding as necessary and making sure to run chown to change the owner
+- Don't include any secrets in your build file; clean up any injected secrets (e.g. from an Env var into a file) after using them (in the same command if possible)
+- Use smaller base images when possible (e.g. ruby-alpine vs ruby)
+- use multi-stage builds when building dependencies like nokogiri which pull in a bunch of other things to build but those things aren't needed for your app to run
+- - ditto for any secrets needed to access a private repo or similar but which don't actually need to be in the image
+- Prefer using the ["arg1","arg2","arg3"] format when executing commands which doesn't fork a new process vs `bundle exec rackup` which creates a new shell
+- avoid installing test or development dependencies in your production builds
+- 
