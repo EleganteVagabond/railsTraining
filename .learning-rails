@@ -1,173 +1,187 @@
-Rails command line
--rails new [project name]
--rake --tasks
---most common is rake db:migrate
--these are only valid in a rails project folder
---rails server to start server
---rails console to launch a console
---rails generate (https://guides.rubyonrails.org/command_line.html#rails-generate)
----model [name] [var]:[string,text,integer,float,etc] [model name]:references
----rails generate scaffold_controller [model] [field:type]+ generates the view & controller
-----for associates use [:model_name]:references, if you refer to it a diff way (e.g. author -> user) then you will need to update the migration
---rails dbconsole
+# Rails learnings
 
-HTTP review
+## Rails command line
+- rails new [project name]
+- rake --tasks
+  - most common is rake db:migrate
+- these are only valid in a rails project folder
+  - rails server to start server
+  - rails console to launch a console
+  - rails generate (https://guides.rubyonrails.org/command_line.html#rails-generate)
+  - model [name] [var]:[string,text,integer,float,etc] [model name]:references
+  - rails generate scaffold_controller [model] [field:type]+ generates the view & controller
+    - for associates use [:model_name]:references, if you refer to it a diff way (e.g. author -> user) then you will need to update the migration
+  - rails dbconsole
+
+## HTTP review
 
 All request styles
--GET
--POST
--PUT
--DELETE
--HEAD
--OPTIONS
--PATCH
+- GET
+- POST
+- PUT
+- DELETE
+- HEAD
+- OPTIONS
+- PATCH
 
-Authorization
--can be sent in head or in the url as a param (auth_token or secret_key or whatever you like)
+## Authorization
+- can be sent in head or in the url as a param (auth_token or secret_key or whatever you like)
 
-7 REST operations
--GET all the posts (aka “index” the posts)
--GET just one specific post (aka “show” that post)
--GET the page that lets you create a new post (aka view the “new” post page)
--POST the data you just filled out for a new post back to the server so it can create that post (aka “create” the post)
--GET the page that lets you edit an existing post (aka view the “edit” post page)
--PUT (or PATCH) the data you just filled out for editing the post back to the server so it can actually perform the update (aka “update” the post)
--DELETE one specific post by sending a delete request to the server (aka “delete” the post)
+## 7 REST operations
+- GET all the posts (aka “index” the posts)
+- GET just one specific post (aka “show” that post)
+- GET the page that lets you create a new post (aka view the “new” post page)
+- POST the data you just filled out for a new post back to the server so it can create that post (aka “create” the post)
+- GET the page that lets you edit an existing post (aka view the “edit” post page)
+- PUT (or PATCH) the data you just filled out for editing the post back to the server so it can actually perform the update (aka “update” the post)
+- DELETE one specific post by sending a delete request to the server (aka “delete” the post)
 
-Railsy MVC
--The router figures out which controller to send it to (e.g. for your blog, the Posts controller).
--That controller asks the model (e.g. Post model) for data and any other tough questions it has.
--Then that controller passes off whatever data it needs to the views (e.g. index.html.erb), which are basically just HTML templates that are waiting for those variables.
--Once the proper view has been pumped full of the data it needs (like the current user’s name), it gets sent back to the client that made the original request. Presto!
+## Railsy MVC
+- The router figures out which controller to send it to (e.g. for your blog, the Posts controller).
+- That controller asks the model (e.g. Post model) for data and any other tough questions it has.
+- Then that controller passes off whatever data it needs to the views (e.g. index.html.erb), which are basically just HTML templates that are waiting for those variables.
+- Once the proper view has been pumped full of the data it needs (like the current user’s name), it gets sent back to the client that made the original request. Presto!
 
-Router
---doorman to the application
---7 options [index, show, new, create, edit, update, destroy]
--creates params hash with passed parameters
--root route defines the default (e.g. index.html)
--routes contain a tag and then the controller and action to call e.g. cars#index
--route for each of the 7 operations identified above
---e.g. get "/posts", to: "posts#index"
---e.g. get "/posts:id", to: "posts#show"
---e.g. post "/posts", to: "posts#create"
---e.g. put "/posts/:id", to: "posts#update"
---e.g. delete "/posts/:id", to: "posts#destroy"
--can define a property by prepending a colon (e.g. :id or :action)
--use resources :[object name] to automatically add each of the 7 routes for an object
---use only [:<route type>,,,] to only include a subset of routes
---use except [:<route type>,,,] to prune specific routes you don't want
---can include subresources e.g. if you have a one to many relationship
+## Router
+- doorman to the application
+- 7 options [index, show, new, create, edit, update, destroy]
+- creates params hash with passed parameters
+- root route defines the default (e.g. index.html)
+- routes contain a tag and then the controller and action to call e.g. cars#index
+- route for each of the 7 operations identified above
+  - e.g. get "/posts", to: "posts#index"
+  - e.g. get "/posts:id", to: "posts#show"
+  - e.g. post "/posts", to: "posts#create"
+  - e.g. put "/posts/:id", to: "posts#update"
+  - e.g. delete "/posts/:id", to: "posts#destroy"
+- can define a property by prepending a colon (e.g. :id or :action)
+- use resources :[object name] to automatically add each of the 7 routes for an object
+  - use only [:<route type>,,,] to only include a subset of routes
+  - use except [:<route type>,,,] to prune specific routes you don't want
+  - can include subresources e.g. if you have a one to many relationship
     resources :[object name] do
         resources :[sub object name]
     end
--rails generates helper methods like 'edit_car_path(<id>)' which return a link using the router's expected format e.g. 'https://myserver/put/cars/<id>'
---https://guides.rubyonrails.org/routing.html#path-and-url-helpers
---models_path -> /models, new_model_path -> models/new, edit_model_path -> models/:id/edit, model_path -> models/:id (note this is singular)
---_path methods are relative
---_url methods are absolute
---any routes that require an id will expect one to be passed
---you can pass additional info (as a param) by using a symbol assignment e.g. :referral_link => "/drew/is/awesome"
--routes don't have to be RESTful e.g. get '/somepath', to: 'somecontroller#someaction'
---might be used to trigger a back end job
----here we want to show a special view of the articles
+- rails generates helper methods like 'edit_car_path(<id>)' which return a link using the router's expected format e.g. `https://myserver/put/cars/<id>`
+  - https://guides.rubyonrails.org/routing.html#path-and-url-helpers
+    - models_path -> /models
+    - new_model_path -> models/new
+    - edit_model_path -> models/:id/edit
+    - model_path -> models/:id (note this is singular)
+  - _path methods are relative
+  - _url methods are absolute
+  - any routes that require an id will expect one to be passed
+  - you can pass additional info (as a param) by using a symbol assignment e.g. :referral_link => "/drew/is/awesome"
+- routes don't have to be RESTful e.g. get '/somepath', to: 'somecontroller#someaction'
+  - might be used to trigger a back end job
+    - here we want to show a special view of the articles
+   ```
    in router.rb get 'articles_by_date', to: 'articles#index_by_date', as: :articles_by_date
    in articles_controller. rb def index_by_date ... end
    in index_by_date.html.rb ...
+   ```
 
-Controllers
---delegates work to the model and view
--use :[method] to refer to an action or method in a controller or view
--controller and view must be named the same e.g. tag_controller and views in tag/ folder
--redirect using 'redirect_to [path_func](<var>) or just 'redirect_to @[object name]'
---this clears any variables that existed in your controller
--tell the router to render a different page using 'render :<page name>'
---this keeps the same var as you had in the controller so if you did @car = Car.new and then render :other_page then other_page's controller & view would have access to @car
---relative to app/views
---use inline to return a snippet from the controller e.g. render inline: "<% products.each do |p| %><p><%= p.name %></p><% end %>"
---use plain to send plaintext with plain e.g. render plain "OK", useful for requests that expect something other than html
----can create a .text.erb file to return text that is laid out
---use json: to render json e.g. render json: @variable which will call to_json for you
---use js: to render javascript e.g. render js: "alert('hello world');"
---use body: to render raw content without any content type (why?)
---use file: to render a raw file from an absolute path e.g. render file: "#{Rails.root}/public/404.html", layout: false, could be a security problem
---use action: to specify an existing action in the controller e.g. render action :new
----consider using send_file instead
---all options include :content_type, :layout, :location, :status, :formats, :variants
--use xml: to render xml e.g. render xml: @var which will call to_xml for you
--tell the router to just return head tags using 'head'
--neither redirect_to nor render act like a return statement. Any code after still gets run
---ex: def show
+## Controllers
+- delegates work to the model and view
+- use :[method] to refer to an action or method in a controller or view
+- controller and view must be named the same e.g. tag_controller and views in tag/ folder
+- redirect using 'redirect_to [path_func](<var>) or just 'redirect_to @[object name]'
+  - this clears any variables that existed in your controller
+- tell the router to render a different page using 'render :<page name>'
+  - this keeps the same var as you had in the controller so if you did @car = Car.new and then render :other_page then other_page's controller & view would have access to @car
+  - relative to app/views
+- use `inline:` to return a snippet from the controller e.g. render inline: "<% products.each do |p| %><p><%= p.name %></p><% end %>"
+- use `plain:` to send plaintext with plain e.g. render plain "OK", useful for requests that expect something other than html
+  - can create a `.text.erb` file to return text that is laid out
+- use `json:` to render json e.g. render json: @variable which will call to_json for you
+- use `js:` to render javascript e.g. render js: "alert('hello world');"
+- use `body:` to render raw content without any content type (why?)
+- use `file:` to render a raw file from an absolute path e.g. render file: "#{Rails.root}/public/404.html", layout: false, could be a security problem
+    - consider using send_file instead
+- use `action:` to specify an existing action in the controller e.g. render action :new
+- use `xml:` to render xml e.g. render xml: @var which will call to_xml for you
+- all options include `:content_type`, `:layout`, `:location`, `:status`, `:formats`, `:variants`
+- tell the router to just return head tags using 'head'
+- neither `redirect`_to nor `render` act like a return statement. Any code after still gets run
+  ```
+  ex: def show
     @user = User.find(params[:id])
     if @user.is_male?
       render "show-boy"
     end
     render "show-girl"
   end
---^render error occurs because render "show-boy" and render "show-girl" both get evaluated (needs an else)
--can use render_to_string to get the rendered text and not send it back to the browser
--inside the CRUD methods if you use [object name]_params it will take the params hash and grab the values for the object
---only happens if you create the associated [object name]_params in the controller or helper
---if in the helper then need to put include [helper name] or helper [helper name] in the controller!
--can define filters to run before/after etc... these are typically a private method
---before_action :[method], only: [:edit, :update]
---after_action :[method]
----has access to everything created during the request (including the response)
----not run if there is an error/exception during the request
---around_action :[method]
----runs before & after
----have to explicitly yield to allow the action to 'go' or create a response yourself
----good for ensuring all of an action takes place within a single transaction
---these are inherited so any filters defined in application_controller will be available to any other controllers
+  ```
+  - render error occurs because `render "show-boy"` and `render "show-girl"` both get evaluated (needs an else)
+- can use `render_to_string` to get the rendered text and not send it back to the browser
+- inside the CRUD methods if you use `[object name]_params` it will take the params hash and grab the values for the object
+  - only happens if you create the associated [object name]_params in the controller or helper
+  - if in the helper then need to put include [helper name] or helper [helper name] in the controller!
+- can define filters to run before/after etc... these are typically a private method
+  - `before_action :[method], only: [:edit, :update]`
+  - `after_action :[method]`
+    - has access to everything created during the request (including the response)
+    - not run if there is an error/exception during the request
+  - `around_action :[method]`
+    - runs before & after
+    - have to explicitly yield to allow the action to 'go' or create a response yourself
+    - good for ensuring all of an action takes place within a single transaction
+  - these are inherited so any filters defined in `application_controller` will be available to any other controllers
 
-Parameters
--all parameters are placed into a hash called params and values are accessed using symbols e.g. params[:id]
--you can whitelist params that you will accept (to prevent security issues)
---use params.require(<required names>)
---use params.permit(<permitted names>)
---these can be chained params.require(...).permit(...)
---usually there is a private method in the controller that makes these calls
--be careful about passing parameters to a method that expects an int because you will be sending a string unless you call to_i
+## Parameters
+- all parameters are placed into a hash called params and values are accessed using symbols e.g. params[:id]
+- you can whitelist params that you will accept (to prevent security issues)
+  - use `params.require(<required names>)`
+  - use `params.permit(<permitted names>)`
+  - these can be chained `params.require(...).permit(...)`
+  - usually there is a private method in the controller that makes these calls
+- be careful about passing parameters to a method that expects an int because you will be sending a string unless you call `to_i`
 
-Flash
---way of sending a message or messages to the user
---usually used for a redirect
---https://api.rubyonrails.org/classes/ActionDispatch/Flash/FlashHash.html#method-i-now
--typically use 3 keys [:success, :error, :notice]
--usage is flash[:success] = "message string"
---or flash.success/flash.error/flash.notice
--only exists for one showing then deleted (so won't appear repeatedly), like a snapchat
--can be used for a normal render by using flash.now[:error] = 'message'
--if you used the wrong version (flash vs flash.now) messages will show up a page late. see https://www.theodinproject.com/courses/ruby-on-rails/lessons/controllers?ref=lnav#introduction
--often placed in the layout files so it can be used across the app
--call flash.keep in your controller to keep the values bfore a redirect
---also use to just keep one thing e.g. flash.keep(:notice)
+## Flash
+- way of sending a message or messages to the user
+  - usually used for a redirect
+  - https://api.rubyonrails.org/classes/ActionDispatch/Flash/FlashHash.html#method-i-now
+- typically use 3 keys [:success, :error, :notice]
+- usage is `flash[:success] = "message string"`
+  - or `flash.success`/`flash.error`/`flash.notice`
+- only exists for one showing then deleted (so won't appear repeatedly), like a snapchat
+- can be used for a normal render by using flash.now[:error] = 'message'
+- if you used the wrong version (flash vs flash.now) messages will show up a page late. see https://www.theodinproject.com/courses/ruby-on-rails/lessons/controllers?ref=lnav#introduction
+- often placed in the layout files so it can be used across the app
+- call `flash.keep` in your controller to keep the values bfore a redirect
+  - also use to just keep one thing e.g. flash.keep(:notice)
 
-Models
--setting names properly on forms makes saving/updating models easier because the hash of the params is setup just how the model likes it
--relationships keywords
---one to many: belongs_to (e.g. belongs_to :article) and has_many (e.g. has_many :comments)
----owner has a [model name]s member with 0 or many children
----child has a [model name] member pointing to who it belongs to
---one to one:
---many to many: has_and_belongs_to_many for both sides of the relationship
--when you save the child object of a relationship it will populate the parent's collection (even if you didn't explicitly add it)
--for rendering forms of a child object (eg 1toMany) form_for needs both parent and child e.g. form_for [@article, @comment] do
--to update a bunch of models use map and make sure to save the record e.g. @articles.each_with_index.map {|article, ix| article.created_at = ix.years.ago; article.save }
--destroy vs delete
---Basically destroy runs any callbacks on the model while delete doesn't. ... The row is simply removed with an SQL DELETE statement on the record's primary key, and no callbacks are executed. To enforce the object's before_destroy and after_destroy callbacks or any :dependent association options, use #destroy.
--models can inherit via a single table (with a type column) or multi-table (with fk ref)
---single table model use a type column
+## Models
+- setting names properly on forms makes saving/updating models easier because the hash of the params is setup just how the model likes it
+- relationships keywords
+ - one to many: `belongs_to` (e.g. `belongs_to :article`) and `has_many` (e.g. `has_many :comments`)
+    - owner has a [model name]s member with 0 or many children
+    - child has a [model name] member pointing to who it belongs to
+  - one to one: `has_one` / `belongs_to`
+  - many to many: `has_and_belongs_to_many` for both sides of the relationship
+- when you save the child object of a relationship it will populate the parent's collection (even if you didn't explicitly add it)
+- for rendering forms of a child object (eg 1toMany) `form_for` needs both parent and child e.g. `form_for [@article, @comment]` do
+- to update a bunch of models use map and make sure to save the record e.g. `@articles.each_with_index.map {|article, ix| article.created_at = ix.years.ago; article.save }`
+- destroy vs delete
+  - Basically `destroy` runs any callbacks on the model while `delete` doesn't. ... The row is simply removed with an SQL DELETE statement on the record's primary key, and no callbacks are executed. To enforce the object's before_destroy and after_destroy callbacks or any :dependent association options, use #destroy.
+- models can inherit via a single table (with a type column) or multi-table (with fk ref)
+  - single table model use a type column
+  ```
   class Human < ActiveRecord::Base
     t.string :type
   class Man < Human
   class Female < Human
---multi-table model uses same fields in multiple tables
+  ```
+  - multi-table model uses same fields in multiple tables
+  ```
   class User < ActiveRecord::Base
   class Admin < User
     set_table_name "admin"
   class Student < User
     set_table_name "student"
---polymorphic uses a shared base table plus a specific model table
+  ```
+  - polymorphic uses a shared base table plus a specific model table
+  ```
   class User < ActiveRecord::Base
     belongs_to :userable, polymorphic: true
     (migration: t.references :imageable, polymorphic: true)
@@ -175,41 +189,48 @@ Models
     has_many :users, as :userable
   class Student < User
     has_many :users, as :userable
-
+  ```
 Forms
---ruby uses the form_for tag to generate forms
--syntax
---normal style form_for(@[object]) do |[field tag]| e.g. <%= form_for(@article) do |f| %>
---child object style form_for([@[object],@[child]] ) do |[field tag]|
---html options style form_for(@[object], html: {}) do |[field tag]| e.g. <%= form_for(@article, html: {multipart: true} ) do |f| %>
--syntax for field
---f.label :[object], [optional text]
---f.text_area :[object], [optional text]
---f.text_field :[object], [optional text]
---f.file_field :[object], [optional text]
---f.password_field :[object], [optional text]
--creating custom forms (not using form_for) where the inputs may represent multiple models
---need to pass the authenticity token otherwise rails thinks you are getting hacked e.g. <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
---if you want to group params use the name field e.g. <input type="text" name="user[first_name]"> puts the value into the :user hash param.
----Then you can pass this to #create for example
----need to whitelist this param (user) in the controller (strong parameters)
--everything is form_with bro
---by default these are sent as ajax requests using remote: true. To disable use local: true
+- ruby uses the `form_for` tag to generate forms
+- syntax
+  - normal style `form_for(@[object]) do |[field tag]| e.g. <%= form_for(@article) do |f| %>`
+  - child object style `form_for([@[object],@[child]] ) do |[field tag]|`
+  - html options style `form_for(@[object], html: {}) do |[field tag]| e.g. <%= form_for(@article, html: {multipart: true} ) do |f| %>`
+- syntax for fields
+  - `f.label :[object], [optional text]`
+  - `f.text_area :[object], [optional text]`
+  - `f.text_field :[object], [optional text]`
+  - `f.file_field :[object], [optional text]`
+  - `f.password_field :[object], [optional text]`
+- creating custom forms (not using `form_for`) where the inputs may represent multiple models
+  - need to pass the authenticity token otherwise rails thinks you are getting hacked e.g. `<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">`
+  - if you want to group params use the name field e.g. `<input type="text" name="user[first_name]">` puts the value into the `:user` hash param.
+    - Then you can pass this to #create for example
+    - need to whitelist this param (user) in the controller (strong parameters)
+- everything is form_with bro
+  - by default these are sent as ajax requests using `remote: true`. To disable use `local: true`
+  ```
   <%= form_with(url: "/search", method: "get") do %>
     <%= label_tag(:q, "Search for:") %>
     <%= text_field_tag(:q) %>
     <%= submit_tag("Search") %>
   <% end %>
--creating a form with fields for a nested object
+  ```
+- creating a form with fields for a nested object
+  ```
   <%= form_with model: @person do |person_form| %>
     <%= person_form.text_field :name %>
     <%= fields_for :contact_detail, @person.contact_detail do |contact_detail_form| %>
       <%= contact_detail_form.text_field :phone_number %>
     <% end %>
   <% end %>
--creating a select with various options
+  ```
+- creating a select with various options
+  ```
   <%= select_tag(:city_id, options_for_select([['Lisbon', 1], ['Madrid', 2], ['Berlin', 3]], 2) ) %>
---adding arbitrary options to the attributes (maybe to use for updating something in the display using javascript )
+  ```
+- adding arbitrary options to the attributes (maybe to use for updating something in the display using javascript )
+  ```
   <%= options_for_select(
     [
       ['Lisbon', 1, { 'data-size' => '2.8 million' }],
@@ -217,31 +238,41 @@ Forms
       ['Berlin', 3, { 'data-size' => '3.4 million' }]
     ], 2
   ) %>
--select with a model
+  ```
+- select with a model
+  ```
   <%= select(:[model], :[field_name or fk id field], [['Lisbon', 1], ['Madrid', 2], ['Berlin', 3]]) %>
--select with a model where the options come from a collection
+  ```
+- select with a model where the options come from a collection
+  ```
   <%= collection_select(:person, :city_id, City.all, :id, :name) %>
--options come from a collection (no model)
+  ```
+- options come from a collection (no model)
+  ```
   <%= options_from_collection_for_select(City.all, :id, :name) %>
--strange idiosyncracy between options_for_select and options_from_collection_for_select
---Pairs passed to options_for_select should have the text first and the value second, however with options_from_collection_for_select should have the value method first and the text method second.
--handy dandy time_zone_select for setting the user's timezone
--use [] syntax to generate an array in the params hash e.g. <input name="person[phone_number][]" type="text"/> creates an array at params[:phone_number]
---can only have one array but multiple hash levels
---more info about nesting using the helpers is here: https://guides.rubyonrails.org/form_helpers.html#using-form-helpers
--creating nested forms (e.g. for a model and its relations)
---use accepts_nested_attributes_for on the model to describe which models will be edited simultaneously e.g. accepts_nested_attributes_for :addresses on a person object
----use allow_destroy:true to allow deleting associated objects e.g. accepts_nested_attributes_for :addresses, allow_destroy: true
-----if the model has a _destroy flag that resolves to true then it will be destroyed e.g. <%= addresses_form.check_box :_destroy %>
-----AND add the _destroy param to the permitted list :) e.g. permit(:name, addresses_attributes: [:id, :kind, :street, :_destroy])
---then use f.fields_for inside the form_with tag
---and allow the params in the params method e.g. params.require(:person).permit(:name, addresses_attributes: [:id, :kind, :street])
---to create stubs for the user to edit (when creating or adding to a model) do this in the controller
+  ```
+- strange idiosyncracy between `options_for_select` and `options_from_collection_for_select`
+  - Pairs passed to `options_for_select` should have the text first and the value second, however with `options_from_collection_for_select` should have the value method first and the text method second.
+- handy dandy `time_zone_select` for setting the user's timezone
+- use [] syntax to generate an array in the params hash e.g. `<input name="person[phone_number][]" type="text"/> creates an array at params[:phone_number]`
+  - can only have one array but multiple hash levels
+  - more info about nesting using the helpers is here: https://guides.rubyonrails.org/form_helpers.html#using-form-helpers
+- creating nested forms (e.g. for a model and its relations)
+  - use `accepts_nested_attributes_for` on the model to describe which models will be edited simultaneously e.g. `accepts_nested_attributes_for :addresses` on a person object
+    - use `allow_destroy:true` to allow deleting associated objects e.g. `accepts_nested_attributes_for :addresses, allow_destroy: true`
+      - if the model has a _destroy flag that resolves to true then it will be destroyed e.g. `<%= addresses_form.check_box :_destroy %>`
+      - AND add the _destroy param to the permitted list :) e.g. `permit(:name, addresses_attributes: [:id, :kind, :street, :_destroy])`
+  - then use `f.fields_for` inside the `form_with` tag
+  - and allow the params in the params method e.g. `params.require(:person).permit(:name, addresses_attributes: [:id, :kind, :street])`
+  - to create stubs for the user to edit (when creating or adding to a model) do this in the controller
+  ```
   def new
     @person = Person.new
     2.times { @person.addresses.build }
   end
--form helpers (some of these are html5 and will need a javascript/css plugin to work consistently on older browsers, ex Modernizr)
+  ```
+- form helpers (some of these are html5 and will need a javascript/css plugin to work consistently on older browsers, ex Modernizr)
+  ```
   <%= text_area_tag(:message, "Hi, nice site", size: "24x6") %>
   <%= password_field_tag(:password) %>
   <%= hidden_field_tag(:parent_id, "5") %>
@@ -257,55 +288,55 @@ Forms
   <%= time_field(:task, :started_at) %>
   <%= number_field(:product, :price, in: 1.0..20.0, step: 0.5) %>
   <%= range_field(:product, :discount, in: 1..100) %>
+  ```
+## Views
+- content of the page that actually gets displayed
+- live in `app/views/layouts` folder
+- written in erb style
+- views have access to all of the variables from the controller
+- typically built from multiple .htlm.erb files starting with application.html.erb
+- yield directive shows where 'inherited' page content should go
+  - can have multiple yield blocks
+  - use `<%= yield :tag %>` to specify a named block
+  - use `<% content_for :[tag] do %>` to specify content for a named yield block
+  - named yield only rendered if the `content_for` tag is used
+- use `<% [condition] %>`for if else/conditions/loops but always be sure to include an <% end %> just like in Ruby
+- use `<%= render ... %>` to render a sub-view/partial. partials need to be named `_[name passed to render].html.erb` to work properly
+ - view must exist in the same folder so you might create `app/views/shared/_some_partial.html.erb` then `<%= render 'shared/some_partial' %>`
+  - can call `<%= render [object] %>` and rails will look for `_[object].html.erb` to include
+  - partials have access to all the vars of any page that includes it but should not necessarily rely on them since it might be used by many diff classes
+  - can call `<%= render 'shared/some_partial', locals: {myvar: value} %>` to explicitly pass them (or any other options)
+  - check for presence of a local variable in the partial by calling `defined?(:var_name)` (in case you don't want to explicitly define it everywhere)
+  - can call `<%= render 'shared/some_partial', :var %>` referenced with `local_assigns[:var]` when you only want to sometimes pass a variable (in special cases for ex)
+  - can call `<%= render partial: "customer", object: @new_customer %>` and then in customer you can read @customer e.g. `<%= @customer.name %>`
+  - can call `<%= render partial: "product", collection: @products %>` to iterate over a collection
+  - can call `<%= render partial: "product", collection: @products, as: :alias %>` to specify the accessor for each item of the collection (maybe if you are reusing a partial that was written for something else)
+  - can call `<%= render partial: "product", collection: @products, spacer_template: "spacer_partial" %>` to render a `_spacer_partial` in between each `_product` partial (NO data accessible in spacer)
+  - can call `<%= render partial: "product", collection: @products, layout: "special_layout" %>` to render a layout in between each item (DOES have data access)
+  - can call `<%= render @[object collection] %>` and rails will also look for `_[object].html` and enumerate over the collection
+    - there is a var called `@[object]_counter` that can be accessed within the partial of a collection e.g. @products -> _product.html.erb has @product_counter
+- `link_to` creates a link to a path function e.g. `<%= link_to "Link Text", link_func %>` where link_func might be `users_path` or `users_url`
+  - can create a js popup confirm dialog by adding a `data: {confirm: }, element e.g. data: {confirm: "Really delete the article?"}`
+- The actual rendering is done by nested classes of the module `ActionView::Template::Handlers`. This guide does not dig into that process, but it's important to know that the file extension on your view controls the choice of template handler.
+- lots of layout stuff to define where the layouts are: https://guides.rubyonrails.org/layouts_and_rendering.html
+-use `raw` to send html that will get rendered as html (instead of regular text) e.g. displaying blog posts. Be careful because this can be a security issue to inject script tags
+  - or use `CGI::escapeHTML('html string')`
 
-Views
---content of the page that actually gets displayed
---live in app/views/layouts folder
---written in erb style
--views have access to all of the variables from the controller
--typically built from multiple .htlm.erb files starting with application.html.erb
--yield directive shows where 'inherited' page content should go
---can have multiple yield blocks
---use <%= yield :tag %> to specify a named block
---use <% content_for :[tag] do %> to specify content for a named yield block
---named yield only rendered if the content_for tag is used
--use <% for if else/conditions/loops but always be sure to include an <% end %> just like in Ruby
--use <%= render ... %> to render a sub-view/partial. partials need to be named _[name passed to render].html.erb to work properly
---view must exist in the same folder so you might create 'app/views/shared/_some_partial.html.erb' then <%= render 'shared/some_partial' %>
---can call <%= render [object] %> and rails will look for _[object].html.erb to include
---partials have access to all the vars of any page that includes it but should not necessarily rely on them since it might be used by many diff classes
---can call <%= render 'shared/some_partial', locals: {myvar: value} %> to explicitly pass them (or any other options)
----check for presence of a local variable in the partial by calling defined?(:var_name) (in case you don't want to explicitly define it everywhere)
---can call <%= render 'shared/some_partial', :var %> referenced with local_assigns[:var] when you only want to sometimes pass a variable (in special cases for ex)
---can call <%= render partial: "customer", object: @new_customer %> and then in customer you can read @customer e.g. <%= @customer.name %>
---can call <%= render partial: "customer", object: @new_customer %> and then in customer you can read @customer e.g. <%= @customer.name %>
---can call <%= render partial: "product", collection: @products %> to iterate over a collection
---can call <%= render partial: "product", collection: @products, as: :alias %> to specify the accessor for each item of the collection (maybe if you are reusing a partial that was written for something else)
---can call <%= render partial: "product", collection: @products, spacer_template: "spacer_partial%> to render a _spacer_partial in between each _product partial (no data accessible in spacer)
---can call <%= render partial: "product", collection: @products, layout: "special_layout" %> to render a layout in between each item (DOES have data access)
---can call <%= render @[object collection] %> and rails will also look for _[object].html and enumerate over the collection
----there is a var called @[object]_counter that can be accessed within the partial of a collection e.g. @products -> _product.html.erb has @product_counter
--link_to creates a link to a path function e.g. <%= link_to "Link Text", link_func %> where link_func might be users_path or users_url
---can create a js popup confirm dialog by adding a data: {confirm: }, element e.g. data: {confirm: "Really delete the article?"}
--The actual rendering is done by nested classes of the module ActionView::Template::Handlers. This guide does not dig into that process, but it's important to know that the file extension on your view controls the choice of template handler.
--lots of layout stuff to define where the layouts are: https://guides.rubyonrails.org/layouts_and_rendering.html
--use raw to send html that will get rendered as html (instead of regular text) e.g. displaying blog posts. Be careful because this can be a security issue to inject script tags
---or use CGI::escapeHTML('html string')
+## Shared Partials Patterns
+-ex 
+  ```
+  <%= render "shared/ad_banner" %>
 
+  <h1>Products</h1>
 
+  <p>Here are a few of our fine products:</p>
+  ...
 
-Shared Partials Patterns
--ex <%= render "shared/ad_banner" %>
-
-    <h1>Products</h1>
-
-    <p>Here are a few of our fine products:</p>
-    ...
-
-    <%= render "shared/footer" %>
+  <%= render "shared/footer" %>
+ ```   
 -ex2 (passing a function or enumeratable)
     *users/index.html.erb
-
+  ```
     <%= render "shared/search_filters", search: @q do |f| %>
     <p>
         Name contains: <%= f.text_field :name_contains %>
@@ -331,9 +362,10 @@ Shared Partials Patterns
         <%= f.submit "Search" %>
     </p>
     <% end %>
+  ```
 -ex 3 nesting yields using the content_for?(:tag) method
     *app/views/layouts/application.html.erb
-
+  ```
     <html>
     <head>
     <title><%= @page_title or "Page Title" %></title>
@@ -346,10 +378,11 @@ Shared Partials Patterns
     <div id="content"><%= content_for?(:content) ? yield(:content) : yield %></div>
     </body>
     </html>
-    On pages generated by NewsController, you want to hide the top menu and add a right menu:
+  ```
+  On pages generated by NewsController, you want to hide the top menu and add a right menu:
 
-    *app/views/layouts/news.html.erb
-
+  *app/views/layouts/news.html.erb
+  ```
     <% content_for :stylesheets do %>
     #top_menu {display: none}
     #right_menu {float: right; background-color: yellow; color: black}
@@ -359,287 +392,306 @@ Shared Partials Patterns
     <%= content_for?(:news_content) ? yield(:news_content) : yield %>
     <% end %>
     <%= render template: "layouts/application" %>
+  ```
+    
+  That's it. The News views will use the new layout, hiding the top menu and adding a new right menu inside the "content" div.
 
-    That's it. The News views will use the new layout, hiding the top menu and adding a new right menu inside the "content" div.
+## Assets
+- managed with sprockets framework
+- tags include `stylesheet_link_tag`, `javascript_include_tag`, `image_tag`, etc...
+  - can be specified by convention `<%= javascript_include_tag "main" %>`
+  - can be specified as relative e.g. `<%= javascript_include_tag "/photos/columns" %>`
+  - can be specified as absolute. `<%= javascript_include_tag "http://example.com/main.js" %>`
+  - can specify a mix in one line `<%= javascript_include_tag "main", "/photos/columns", "http://example.com/main.js" %>`
+- references files in the `/assets/` folder
+-  stylesheets can be in `app/assets`, `lib/assets` or `vendor/assets`
+  - javascript can be in `app/assets`, `lib/assets` or `vendor/assets`
+- images are loaded from `public/images` `<%= image_tag "myimage.png" %>`
+  - can specify all of the assorted attributes in the tag `<%= image_tag "myimage.png", alt: "hi", id: "hi", class: "nav", size: "5x5" %>`
+- other content includes `video_tag`, `audio_tag`, `auto_discovery_link` (used for rss/atom/json feeds)
+- default folders defined
+  - `app/assets` is for assets owned by the app
+  - `lib/assets` is for shared assets or assets that don't fit the scope of the app
+  - `vendor/assets` is for assets owned by others (including open source projects)
+    - if you want to precompile these you may need to use a helper like `asset_path`
+  - can also add custom folders in the `assets.rb` file e.g. `Rails.application.config.assets.paths << Rails.root.join("lib", "videoplayer", "flash")`
+- index files named index[ext] serves as the manifest for a folder ex `lib/assets/javascript/lib_name/index.js`, // =require . and elsewhere // =require lib_name
+- use `data-turbolinks-track` to check if assets have been updated before loading into the page
+  - optimizes file size sent to client?
+- can use ERB in css or javascript files if you append the .erb extension eg `mycss.css.erb` -> `.class {background-image: url(<%= asset_path 'image.png' %>)}`
+  - if image is in `public/assets` then it will use that one, otherwise it looks for `app/assets/images/image.png` (for ex)
+- edit options in `development.rb` to aid development. more info here: https://guides.rubyonrails.org/asset_pipeline.html#in-development
+- to compile assets locally (e.g. not on the server at deploy time ) use config.assets.prefix = "/dev-assets" which creates them in a separate dir
+- to compile assets per request use config.assets.compile=true
 
-Assets
---managed with sprockets framework
--tags include stylesheet_link_tag, javascript_include_tag, image_tag, etc...
---can be specified by convention <%= javascript_include_tag "main" %>
---can be specified as relative e.g. <%= javascript_include_tag "/photos/columns" %>
---can be specified as absolute. <%= javascript_include_tag "http://example.com/main.js" %>
---can specify a mix in one line <%= javascript_include_tag "main", "/photos/columns", "http://example.com/main.js" %>
--references files in the /assets/ folder
--stylesheets can be in app/assets, lib/assets or vendor/assets
--javascript can be in app/assets, lib/assets or vendor/assets
--images are loaded from public/images <%= image_tag "myimage.png" %>
---can specify all of the assorted attributes in the tag <%= image_tag "myimage.png", alt: "hi", id: "hi", class: "nav", size: "5x5" %>
--other content includes video_tag, audio_tag, auto_discovery_link (used for rss/atom/json feeds)
--default folders defined
---app/assets is for assets owned by the app
---lib/assets is for shared assets or assets that don't fit the scope of the app
---vendor/assets is for assets owned by others (including open source projects)
----if you want to precompile these you may need to use a helper like asset_path
---can also add custom folders in the assets.rb file e.g. Rails.application.config.assets.paths << Rails.root.join("lib", "videoplayer", "flash")
--index files named index[ext] serves as the manifest for a folder ex lib/assets/javascript/lib_name/index.js, // =require . and elsewhere // =require lib_name
--use "data-turbolinks-track" to check if assets have been updated before loading into the page
---optimizes file size sent to client?
--can use ERB in css or javascript files if you append the .erb extension eg mycss.css.erb -> .class {background-image: url(<%= asset_path 'image.png' %>)}
---if image is in public/assets then it will use that one, otherwise it looks for app/assets/images/image.png (for ex)
--edit options in development.rb to aid development. more info here: https://guides.rubyonrails.org/asset_pipeline.html#in-development
--to compile assets locally (e.g. not on the server at deploy time ) use config.assets.prefix = "/dev-assets" which creates them in a separate dir
--to compile assets per request use config.assets.compile=true
-
-
-Asset Pipeline
--assets listed in manifest.js, application.js, application.css, etc...
--use require_tree to grab everything in a directory (recursive)
--use require_directory to grab everything in a directory (non-recursive)
-
--resolving conflicts (e.g. page 1 wants a .container one way and page 2 wants a .container another way)
+## Asset Pipeline
+- assets listed in `manifest.js`, `application.js`, `application.css`, etc...
+- use `require_tree` to grab everything in a directory (recursive)
+- use `require_directory` to grab everything in a directory (non-recursive)
+- resolving conflicts (e.g. page 1 wants a .container one way and page 2 wants a .container another way)
 --use namespacing in your css so
+  ```
   <div class="page1">
    <div container />
   </div>
-  in .css .page1 .container { //styles }
+  ```
+  in .css `.page1 .container { //styles }`
+  ```
   <div class="page2">
    <div container />
   </div>
-  in .css .page2 .container { //styles }
+  ```
+  in .css `.page2 .container { //styles }`
 
-DB Management
--use db:migrate to push changes from your .db file to the database
--every table defaults to having a timestamps column which creates created_at and updated_at history columns that rails manages automagically
--syntax is t.[type] :col_name e.g. t.string :title or t.text :body
---t.string is a single line string (e.g. varchar)
---t.text is a multi-line string (e.g. blob or varchar2)
---t.integer is an integer
---t.datetime is a datetime field
--just creating a new object does not persist it. Must use the .save function
--commands in a migration file
---add_column :[target], :[col name], :[col type]
---add_reference :[target, :[reference]
---remove_column :[target], :[col name]
---drop table :[target]
+## DB Management
+- use `db:migrate` to push changes from your .db file to the database
+- every table defaults to having a timestamps column which creates `created_at` and `updated_at` history columns that rails manages automagically
+- syntax is `t.[type] :col_name` e.g. t.string :title or t.text :body
+  - `t.string` is a single line string (e.g. varchar)
+  - `t.text` is a multi-line string (e.g. blob or varchar2)
+  - `t.integer` is an integer
+  - `t.datetime` is a datetime field
+- just creating a new object does not persist it. Must use the .save function
+- commands in a migration file
+  - `add_column :[target], :[col name], :[col type]`
+  - `add_reference :[target, :[reference]`
+  - `remove_column :[target], :[col name]`
+  - `drop table :[target]`
 
-Authentication
---devise is very common, I used sorcery which is lighter weight (maybe)
--need a model to act as the 'account'. Can be user, author, whatever you like
--need a controller for that model that handles create (login), destory(logout) and new (new auth model object) routes
--need a login and account creation screen of some choice
--these frameworks provide global methods like logged_in? and current_user to access auth information
--add before_action methods in controllers to protect certain fields e.g. before_action :require_login, only: [:destroy]
---you can add a before_action in the application_controller which will require auth for all
----use skip_before_action to explicitly define which pages aren't protected
--need routes for login/logout
+## Authentication
+- Devise is very common, I used sorcery which is lighter weight (maybe)
+- need a model to act as the 'account'. Can be user, author, whatever you like
+- need a controller for that model that handles create (login), destory(logout) and new (new auth model object) routes
+- need a login and account creation screen of some choice
+- these frameworks provide global methods like `logged_in?` and `current_user to access auth information
+- add `before_action` methods in controllers to protect certain fields e.g. `before_action :require_login, only: [:destroy]`
+ - you can add a `before_action` in the `application_controller` which will require auth for all
+    - use `skip_before_action` to explicitly define which pages aren't protected
+- need routes for login/logout
   ex. #routes for creating author sessions which is how we authenticate
+  ```
   resources :author_sessions, only: [:new, :create, :destroy]
 
   get 'login' => 'author_sessions#new'
   get 'logout' => 'author_sessions#destroy'
--Rails has a method called has_secure_password
--to persist authentication across sessions (using remember me type functionality) add a column to the table for an encrypted remember_token which will be used to remember that user in the future
---make a permanent cookie with the remember_token in it e.g. cookies.permanent[:remember_token])
---it’s best practice to reset the token on each new signin if the user signs out.
+  ```
+- Rails has a method called `has_secure_password`
+- to persist authentication across sessions (using remember me type functionality) add a column to the table for an encrypted `remember_token` which will be used to remember that user in the future
+  - make a permanent cookie with the `remember_token` in it e.g. `cookies.permanent[:remember_token])`
+  - it’s best practice to reset the token on each new signin if the user signs out.
 
-Javascript plugins
--how to add bootstrap, jquery and something called popper https://blog.makersacademy.com/how-to-install-bootstrap-and-jquery-on-rails-6-da6e810c1b87
---update environment.js, application.js and application.css/scss
+## Javascript plugins
+- how to add `bootstrap`, `jquery` and something called `popper` https://blog.makersacademy.com/how-to-install-bootstrap-and-jquery-on-rails-6-da6e810c1b87
+  - update `environment.js`, `application.js` and `application.css/scss`
 
-Validations (https://guides.rubyonrails.org/active_record_validations.html)
---validations can be done client side, in the controller/model(preferred) and database
---client side is more responsive but can be bypassed, controller is messy, model is a great place but doesn't work well for race conditions, database is great for referential integrity and uniqueness
--methods that invoke validation include create, save, update and destroy (as well as their ! versions)
--methods that bypass validation include decrement, decrement_counter, increment, increment_counter, toggle!, touch, update_all, update_attribute, update_column, update_columns, update_counters
--calling new does not invoke validation (e.g. Article.new(article_hash) works even if values are bogus)
--user valid? and invalid? methods to check state of model
--use .errors to check for errors or to add errors during custom validation
---access specific field errors with errors[:field]
---add errors with errors.add(:field,message) or errors.add(:base,message) for errors about the whole object
---access error details using errors.details[:field]
---access errors about the whole object using errors[:base] or errors.details[:base] (:base is a reserved word)
---clear the errors (so valid? is true) using errors.clear
---errors.size returns the # of errors
---display errors in a view using @model.errors, if you put a <div class="field_with_errors"> then there is some default css rails provides
--can use helpers to provide common validation rules
---use the :on option to specify when the validation should be run (predefined values are :create or :update)
----can also define your own context with this so that it doesn't always run. need to explicitly invoke using model.valid?(:scope)
-----this also runs any non-scoped validations
---use the :message option to specify the message that is returned if there is an error
---use the :allow_nil option to allow nil values
---use the :allow_blank option to allow a blank value (nil or empty string)
---use the :strict option to cause an exception to be raised if the validation fails (like a ! version)
----access variables in the message using %{value} syntax
---presence: validate whether the value is present .g. validates [:field], presence: true
----to validate a belongs_to association use validates: [:belong_to_var], presence: true
----to validate a has_many association use validates: [:has_many_var], inverse_of: [:model]
----this should probably be done on the client side too
---absence: validate that a value is NOT present .g. validates [:field], absence: true
----absent means nil or a blank string
----test associated value using validates [:assoc_field], absence: true
---acceptance: validate a checkbox is checked (indicating the user accepted something) e.g. validates: [:field], acceptance: true
----can specify accepted values using accept: [values (arr or one)] e.g. acceptance: {accept: ['yes','y','si','oui']}
---validates_associated: used to validate that any associated objects are valid e.g. has_many :books validates_associated: books
----only place this on one side of the relationship otherwise you get an endless loop of them calling each other
---confirmation: validate that two fields are the same (e.g. password or email) e.g. validates: [:field_name], confirmation: true
----must name fields like email, email_confirmation
----only runs if confirmation field is not nil so also add validates: [:field], presence: true
----case_sensitive: option for ignoring case
---exclusion: validate that a value isn't something (e.g. a reserved word) validates [:field], exclusion: {in: 'some regex' }
---format: validate that an entry is in a specified format e.g. validates: [:field], format: {with: 'some regex' }
----also can use without:
---length: validates that an entry is a specified length e.g. validates: [:field], length: {minimum: 2, maxmimum: 50, in: 2..50, is: 6}
----You can personalize these messages using the :wrong_length, :too_long, and :too_short options and %{count} as a placeholder for the number corresponding to the length constraint being used
---numericality: validate that a value matches a numerical format e.g. validates: [:field], numericality: true
----options include :only_integer, :greater_than, :greater_than_or_equal_to, :equal_to, :less_than, :less_than_or_equal_to, :other_than, :odd, :even
----defaults to not allowing nil but you can change this by passing allow_nil: true
---uniqueness: validate that an attribute is unique right before insertion e.g. validates: [:field], uniqueness: true
----could be violated in a race condition
----use case_sensitive: false to ignore case (e.g. email validation)
----scope option to use a set of values that limit the uniqueness within a given scope e.g. validates: [:field], uniqueness: {scope: [:other_field],,,}
-----this is like a unique key on 2 columns. in the example a holiday is only allowed to exist once per year (e.g. xmas 2019, xmas 2020, etc...)
--validates_with uses a custom validator
---a validator can accept multiple classes
---only initialized once during the app lifecycle so instance variables can be tricky (like a static class)
---can also use a PORO (plain old ruby object) by calling validate do |model| ModelValidator.new(model, other_vars,,,).validate end
--validates_each validates attributes against a block e.g. validates_each :var1, :var2 do |record, attr, value| ...
---this way you can use the same validator for multiple fields
--conditional validation only runs against a condition e.g. validates [:field], presence: true, if/unless: :some_func?
---can use an inline func (lambda) e.g. validates [:field], presence: true, if: -> {value.blank?}
----also do this using Proc.new({|param| param.field.blank?})
---use with_options to group conditional validations for a given condition
-  with_options if: :is_admin? do |admin|
-    admin.validates :password, length: { minimum: 10 }
-    admin.validates :email, presence: true
-  end
---can combine validation conditions using array syntax
-  validates :mouse, presence: true,
-    if: [Proc.new { |c| c.market.retail? }, :desktop?]
---can have both an if and an unless block, only succeds when if block is true and unless block is false
-   validates :mouse, presence: true,
-    if: [Proc.new { |c| c.market.retail? }, :desktop?]
-    unless: Proc.new { |c| c.trackpad.present? }
--custom validators are a class that helps validate the model. the validator extends ActiveModel::Validator e.g. GoodnessValidator < ActiveModel::Validator
---has a method called validate(model)
---extend EachValidator to be called for individual attribes instead of the whole model e.g. EmailValidator < ActiveModel::EachValidator def validate_each(record,attr,value)
---can mix custom and built in validators e.g. validates: [:field], presence: true, email: true
--can create custom methods to verify things using validate :method1, :method2 ...
---use errors.add([:field],[message]) to indicate that a verification failed
---use on: option to specify when a custom method runs
+## Validations (https://guides.rubyonrails.org/active_record_validations.html)
+- validations can be done client side, in the controller/model(preferred) and database
+  - client side is more responsive but can be bypassed, controller is messy, model is a great place but doesn't work well for race conditions, database is great for referential integrity and uniqueness
+- methods that invoke validation include `create`, `save`, `update` and `destroy` (as well as their `!` versions)
+  - Can ovveride using `:validate => false`
+- methods that bypass validation include `decrement`, `decrement_counter`, `increment`, `increment_counter`, `toggle!`, `touch`, `update_all`, `update_attribute`, `update_column`, `update_columns`, `update_counters`
+- calling `new` does not invoke validation (e.g. `Article.new(article_hash)` works even if values are bogus)
+- use `valid?` and `invalid?` methods to check state of model
+- use `.errors` to check for errors or to add errors during custom validation
+  - access specific field errors with `errors[:field]`
+  - add errors with `errors.add(:field,message)` or `errors.add(:base,message)` for errors about the whole object
+  - access error details using `errors.details[:field]`
+  - access errors about the whole object using `errors[:base]` or `errors.details[:base]` (`:base` is a reserved word)
+  - clear the errors (so `valid?` is true) using `errors.clear`
+  - `errors.size` returns the # of errors
+  - display errors in a view using `@model.errors`, if you put a `<div class="field_with_errors">` then there is some default css rails provides
+- can use helpers to provide common validation rules
+  - use the `:on` option to specify when the validation should be run (predefined values are `:create` or `:update`)
+    - can also define your own context with this so that it doesn't always run. need to explicitly invoke using `model.valid?(:scope)`
+      - this also runs any non-scoped validations
+  - use the `:message` option to specify the message that is returned if there is an error
+  - use the `:allow_nil` option to allow `nil` values
+  - use the `:allow_blank` option to allow a blank value (nil or empty string)
+  - use the `:strict` option to cause an exception to be raised if the validation fails (like a ! version)
+    - access variables in the message using `%{value}` syntax
+  - presence: validate whether the value is present e.g. `validates [:field], presence: true`
+    - to validate a `belongs_to` association use `validates: [:belong_to_var], presence: true`
+    - to validate a `has_many` association use `validates: [:has_many_var], inverse_of: [:model]`
+      - this should probably be done on the client side too
+  - absence: validate that a value is NOT present e.g. `validates [:field], absence: true`
+  - absent means nil or a blank string
+    - test associated value using `validates [:assoc_field], absence: true`
+  - `acceptance:` validate a checkbox is checked (indicating the user accepted something) e.g. `validates: [:field], acceptance: true`
+    - can specify accepted values using accept: [values (arr or one)] e.g. `acceptance: {accept: ['yes','y','si','oui']}`
+  - `validates_associated:` used to validate that any associated objects are valid e.g. `has_many :books validates_associated: books`
+    - only place this on one side of the relationship otherwise you get an endless loop of them calling each other
+  - `confirmation:` validate that two fields are the same (e.g. password or email) e.g. `validates: [:field_name], confirmation: true`
+    - must name fields like `email`, `email_confirmation`
+    - only runs if confirmation field is not nil so also add `validates: [:field], presence: true`
+  - `case_sensitive:` option for ignoring case
+  - `exclusion:` validate that a value isn't something (e.g. a reserved word) `validates [:field], exclusion: {in: 'some regex' }`
+  - `format:` validate that an entry is in a specified format e.g. `validates: [:field], format: {with: 'some regex' }`
+    - also can use without:
+  - `length:` validates that an entry is a specified length e.g. validates: [:field], length: {minimum: 2, maxmimum: 50, in: 2..50, is: 6}
+    - You can personalize these messages using the `:wrong_length`, `:too_long`, and `:too_short` options and %{count} as a placeholder for the number corresponding to the length constraint being used
+  - `numericality:` validate that a value matches a numerical format e.g. validates: [:field], numericality: true
+    - options include `:only_integer`, `:greater_than`, `:greater_than_or_equal_to`, `:equal_to`, `:less_than`, `:less_than_or_equal_to`, `:other_than`, `:odd`, `:even`
+    - defaults to not allowing nil but you can change this by passing allow_nil: true
+  - `uniqueness:` validate that an attribute is unique right before insertion e.g. `validates: [:field], uniqueness: true`
+    - could be violated in a race condition
+    - use `case_sensitive: false` to ignore case (e.g. email validation)
+    - scope option to use a set of values that limit the uniqueness within a given scope e.g. `validates: [:field], uniqueness: {scope: [:other_field],,,}`
+      - this is like a unique key on 2 columns. in the example a holiday is only allowed to exist once per year (e.g. xmas 2019, xmas 2020, etc...)
+- `validates_with` uses a custom validator
+  - a validator can accept multiple classes
+  - only initialized once during the app lifecycle so instance variables can be tricky (like a static class)
+  - can also use a PORO (plain old ruby object) by calling validate do |model| ModelValidator.new(model, other_vars,,,).validate end
+- `validates_each` validates attributes against a block e.g. `validates_each :var1, :var2 do |record, attr, value| ...`
+  - this way you can use the same validator for multiple fields
+- conditional validation only runs against a condition e.g. validates [:field], presence: true, if/unless: :some_func?
+  - can use an inline func (lambda) e.g. `validates [:field], presence: true, if: -> {value.blank?}`
+    - also do this using `Proc.new({ |param| param.field.blank? })`
+  - use `with_options` to group conditional validations for a given condition
+    ```
+    with_options if: :is_admin? do |admin|
+      admin.validates :password, length: { minimum: 10 }
+      admin.validates :email, presence: true
+    end
+    ```
+  - can combine validation conditions using array syntax
+    ```
+    validates :mouse, presence: true,
+      if: [Proc.new { |c| c.market.retail? }, :desktop?]
+    ```
+  - can have both an if and an unless block, only succeds when if block is true and unless block is false
+  ```
+    validates :mouse, presence: true,
+      if: [Proc.new { |c| c.market.retail? }, :desktop?]
+      unless: Proc.new { |c| c.trackpad.present? }
+  ```
+- custom validators are a class that helps validate the model. the validator extends ActiveModel::Validator e.g. GoodnessValidator < ActiveModel::Validator
+  - has a method called `validate(model)`
+  - extend `EachValidator` to be called for individual attribes instead of the whole model e.g. EmailValidator < ActiveModel::EachValidator def validate_each(record,attr,value)
+  - can mix custom and built in validators e.g. validates: [:field], presence: true, email: true
+- can create custom methods to verify things using validate :method1, :method2 ...
+  - use errors.add([:field],[message]) to indicate that a verification failed
+  - use on: option to specify when a custom method runs
 
 Cookies
--hash called cookies and the key-value pairs are stored as separate cookie files
---e.g. cookies[:hair-color] = "blonde" -> a cookie called hair-color with a value of blonde
--delete using cookies.delete([tag name])
--set time to expire using cookies[:name] = {value: "[cookie value]", expires: [time in ms]}
--all cookie values sent every time. Could get expensive
--store auth value in a cookie?
+- hash called cookies and the key-value pairs are stored as separate cookie files
+  - e.g. `cookies[:hair-color] = "blonde"` -> a cookie called hair-color with a value of blonde
+- delete using `cookies.delete([tag name])`
+- set time to expire using `cookies[:name] = {value: "[cookie value]", expires: [time in ms]}`
+- all cookie values sent every time. Could get expensive
+- store auth value in a cookie?
 
 Session
--Rails stores these in a special cookie, default is that it expires when the browser is closed
--accessed using session[:value] hash
--reset the session using reset_session
--The session is only available in the controller and the view
--can be configured to be stored in different places
---CookieStore (default)
---CacheStore (Rails cache)
---ActiveRecordStore (DB) using activerecord-session_store gem
+- Rails stores these in a special cookie, default is that it expires when the browser is closed
+- accessed using `session[:value]` hash
+- reset the session using `reset_session`
+- The session is only available in the controller and the view
+- can be configured to be stored in different places
+  - CookieStore (default)
+  - CacheStore (Rails cache)
+  - ActiveRecordStore (DB) using activerecord-session_store gem
 
 ActiveRecord (DB models)
--calls to find/take methods return objects and exec immediately
--calls to other methods are lazyily run and return ActiveRecord relation array (needs to be indexed into)
--existence checks available via exists?, any? and many?
--pass args to the where() method using
---labels e.g. (email: [value])
---lamba assignments e.g. ("email" => [value])
---literal sql e.g. ("email= '[value]'")
---parameterized sql e.g. ("email = ?",[value])
---association e.g. ("users.email" => [value])
--can batch large queries using find_each which chunks the query
--use the find_by method like where method
--use select method to select specific columns by
---label e.g. select(:label)
---as e.g. @users = User.select("users.id AS user_id") -> @users.first.user_id
--group by queries
---count e.g. Post.joins(:tags).group("tags.name").count
---max e.g. Posts.group(:created_on).max
---having ??
--joins
---need to be more specific about common column names like id e.g. Posts.joins(:tags).group("posts.id")
--includes
---brings in an object with the query (inner/outer join) instead of lazy load
---solves N+1 queries issue  (where commonly accessed associations are loaded lazily)
---e.g. Post.includes(:author).all
---can specify a condition e.g. Post.includes(:author).where(author: {name: "Drew"})
--pluck
---will grab all of the columns and place them into an array
---e.g. User.pluck(:name) returns an array of all the names from the user table ["Foo","Bar",...]
--scopes
---allow you to add common flags/specifiers/etc to a query
---e.g. scope :important, -> { where(is_important: true) } and Post.important.all
---can be synthesized using a class method e.g. def self.important self.where(is_imporant: true) end
--find_by_sql
---write raw sql to get what you want instead of using finder/where methods
---probably good for calls to store procedures, functions, etc...
--finder methods can take arrays e.g. User.find([1,10]) or User.find(1,10)
--take just takes as many objects as you pass it. Order is undefined
--first(x) actually returns the x number of objects by id (vs take(x)) (ASC)
--last is the opposite of first (DESC)
---both first and last can be used with order clauses and will return the first/last x objects based on that ordering
--find_each
---retrieves in batches and yields each batch to the code block
-  User.find_each do |user|
-    user.blabhlbah()
-  end
---batch size default is 10,000, you can change it using the batch_size: option e.g. User.find_each(batch_size: 5000)
---defaults to ordering by primary key if you change that you may get an error but if not it will be ignored
---use start option to set where the pk starts in the order e.g. User.find_each(start: 2000) starts with user_id 2000
---use finish option to set where the pk ends in the order e.g. User.find_each(start: 2000, finish: 2500) starts with user_id 2000 and ends with 2500
--find_in_batches
---yields batches as an array instead of a single object
---Invoice.find_in_batches do |invoices|
-  export.add_invoices(invoices)  # invoices is an array here
---can be used on associations, too e.g. Invoice.pending.find_in_batches
---has the same options as find_each
--conditions
---don't use hard coded queries like Client.where("name=#{params.name}"). exposes you to injection attacks
---use parameterized queries like Client.where("name=?",params[:name]). it's a cacheable query
---can also use key for params and a hash like Client.where("name=:name", {name: "drew"}). makes it simple to pash the params hash, for ex
---can also use hash values like Client.where(locked: true)
---works for associations e.g.
-  Article.where(author: author)
-  Author.joins(:articles).where(articles: { author: author })
--range conditions for dates
---Client.where(created_at: (Time.now.midnight-1.day)...Time.now.midnight) (created in the past day)
--in conditions passing an array
---Client.where(name: ["Drew","Rob","Dan"])
--not conditions
---Client.where.not(name: "Drew")
--or conditions (between 2 relations)
---Client.where(locked: true).or(Client.where(name: "Drew"))  # note use of a full relation as the .or argument
--ordering
---Client.order(:created_at)
---Client.order(created_at: :desc)
---Client.order(created_at: :desc, name: :asc)
--selecting a subset of fields
---Client.select(:created_at, :name)
---Client.select("created_at, name")
---you will get a model object with only the selected fields initialized, accessing others will throw an error
--distinct
---Client.select(:name).distinct
--limits
---Client.limit(5)
---Client.limit(5).offset(20) # 21-25th records
--group
---Order.select("date(created_at) as ord_date, sum(price) as total_price").group("date(created_at))
--count
---Order.group(:status).count # select count(*) from orders group by status
--having
---Order.select("sum(price) as tp").group("sum(price)").having("sum(price) > ?",50)
--unscoping a var (useful more for scopes/predefined queries where you don't want part of it)
---Client.where(id: 10, name: "Drew").unscope(:id)
--Null relations
-
+- calls to find/take methods return objects and exec immediately
+- calls to other methods are lazyily run and return ActiveRecord relation array (needs to be indexed into)
+- existence checks available via `exists?`, `any?` and `many?`
+- pass args to the where() method using
+  - labels e.g. (email: [value])
+  - lamba assignments e.g. ("email" => [value])
+  - literal sql e.g. ("email= '[value]'")
+  - parameterized sql e.g. ("email = ?",[value])
+  - association e.g. ("users.email" => [value])
+- can batch large queries using `find_each` which chunks the query
+- use the `find_by` method like where method
+- use select method to select specific columns by
+  - label e.g. select(:label)
+  - as e.g. `@users = User.select("users.id AS user_id") -> @users.first.user_id`
+- group by queries
+  - count e.g. Post.joins(:tags).group("tags.name").count
+  - max e.g. Posts.group(:created_on).max
+- having ??
+- joins
+  - need to be more specific about common column names like id e.g. Posts.joins(:tags).group("posts.id")
+- includes
+  - brings in an object with the query (inner/outer join) instead of lazy load
+  - solves N+1 queries issue  (where commonly accessed associations are loaded lazily)
+  - e.g. Post.includes(:author).all
+- can specify a condition e.g. `Post.includes(:author).where(author: {name: "Drew"})`
+- pluck
+  - will grab all of the columns and place them into an array
+  - e.g. `User.pluck(:name)` returns an array of all the names from the user table ["Foo","Bar",...]
+- scopes
+  - allow you to add common flags/specifiers/etc to a query
+  - e.g. scope :important, -> { where(is_important: true) } and Post.important.all
+  - can be synthesized using a class method e.g. def self.important self.where(is_imporant: true) end
+- find_by_sql
+  - write raw sql to get what you want instead of using finder/where methods
+  - probably good for calls to store procedures, functions, etc...
+- finder methods can take arrays e.g. User.find([1,10]) or User.find(1,10)
+- take just takes as many objects as you pass it. Order is undefined
+- first(x) actually returns the x number of objects by id (vs take(x)) (ASC)
+- last is the opposite of first (DESC)
+  - both first and last can be used with order clauses and will return the first/last x objects based on that ordering
+- find_each
+  - retrieves in batches and yields each batch to the code block
+    ```
+    User.find_each do |user|
+      user.blabhlbah()
+    end
+    ```
+  - batch size default is 10,000, you can change it using the `batch_size:` option e.g. `User.find_each(batch_size: 5000)`
+  - defaults to ordering by primary key if you change that you may get an error but if not it will be ignored
+  - use start option to set where the pk starts in the order e.g. User.find_each(start: 2000) starts with user_id 2000
+  - use finish option to set where the pk ends in the order e.g. User.find_each(start: 2000, finish: 2500) starts with user_id 2000 and ends with 2500
+- find_in_batches
+  - yields batches as an array instead of a single object
+    ```
+    Invoice.find_in_batches do |invoices|
+      export.add_invoices(invoices)  # invoices is an array here
+    end
+    ```
+  - can be used on associations, too e.g. Invoice.pending.find_in_batches
+  - has the same options as find_each
+- conditions
+  - don't use hard coded queries like Client.where("name=#{params.name}"). exposes you to injection attacks
+  - use parameterized queries like Client.where("name=?",params[:name]). it's a cacheable query
+  - can also use key for params and a hash like Client.where("name=:name", {name: "drew"}). makes it simple to pash the params hash, for ex
+  - can also use hash values like `Client.where(locked: true)`
+  - works for associations e.g.
+    ```
+    Article.where(author: author)
+    Author.joins(:articles).where(articles: { author: author })
+    ```
+- range conditions for dates
+  - `Client.where(created_at: (Time.now.midnight-1.day)...Time.now.midnight)` (created in the past day)
+- in conditions passing an array
+  - `Client.where(name: ["Drew","Rob","Dan"])`
+- not conditions
+  - `Client.where.not(name: "Drew")`
+- or conditions (between 2 relations)
+  - `Client.where(locked: true).or(Client.where(name: "Drew"))`  # note use of a full relation as the .or argument
+- ordering
+  - `Client.order(:created_at)`
+  - `Client.order(created_at: :desc)`
+  - `Client.order(created_at: :desc, name: :asc)`
+- selecting a subset of fields
+  - `Client.select(:created_at, :name)`
+  - `Client.select("created_at, name")`
+  - you will get a model object with only the selected fields initialized, accessing others will throw an error
+- distinct
+  - `Client.select(:name).distinct`
+- limits
+  - `Client.limit(5)`
+  - `Client.limit(5).offset(20)` # 21-25th records
+- group
+  - `Order.select("date(created_at) as ord_date, sum(price) as total_price").group("date(created_at))`
+- count
+  - `Order.group(:status).count` # select count(*) from orders group by status
+- having
+  - `Order.select("sum(price) as tp").group("sum(price)").having("sum(price) > ?",50)`
+- unscoping a var (useful more for scopes/predefined queries where you don't want part of it)
+  - `Client.where(id: 10, name: "Drew").unscope(:id)`
+- Null relations
+  ```
   # The visible_articles method below is expected to return a Relation.
   @articles = current_user.visible_articles.where(name: params[:name])
 
@@ -654,63 +706,72 @@ ActiveRecord (DB models)
       Article.none # => returning [] or nil breaks the caller code in this case
     end
   end
--read-only
---prevents updates
---Client.readonly.first
--locking
---optimistic locking: table needs a column called lock_version:integer
---pessimistic locking: uses DB mechanism, usually in a transaction, explicitly call lock e.g. Client.lock.first
-  Item.transaction do
-    i = Item.lock.first
-    i.name = 'Jones'
-    i.save!
-  end
-  or
-  item = Item.first
-  item.with_lock do
-    # This block is called within a transaction,
-    # item is already locked.
-    item.increment!(:views)
-  end
--as
---using the as notation in your sql automatically creates an attribute in the returned object
---e.g. Article.select("articles.*, count(comments.id) as comment_count").joins(:comments).group(:article_id)
--joins
---.joins for inner joins e.g. Author.joins("INNER JOIN posts ON posts.author_id = authors.id AND posts.published = 't'")
---.left_outers_joins for outer joins
---can use keys as join values e.g. Article.joins(:categories, :comments)
---can nest e.g. Articles.joins(comments: :guest) -> Article inner join comments inner join guests
---can deeply nest e.g Category.joins(articles: [{comment: :guest}, :tags])
---where clause with join e.g. Articles.joins(:comments).where(comments: {created_at: time_range})
--enums
---can specify an enum for a model
-  class Book < ApplicationRecord
-    enum availability: [:available, :unavailable]
-  end
---query this using .[enum_name] e.g. new_book.availability?
---set using the ! notation e.g. new_book.unavailable!
--find_or_create_by
---checks for records with specified attribute(s) and if none exists the record(s) are added for them using the [model].create method (which auto saves)
---use create_with to override defaults e.g. Client.create_with(locked: false).find_or_create_by(first_name: Andy)
----or use a block
-    Client.find_or_create_by(first_name: 'Andy') do |c|
-      c.locked = false
+  ```
+- read-only
+  - prevents updates
+  - `Client.readonly.first`
+- locking
+  - optimistic locking: table needs a column called lock_version:integer
+  - pessimistic locking: uses DB mechanism, usually in a transaction, explicitly call lock e.g. Client.lock.first
+    ```
+    Item.transaction do
+      i = Item.lock.first
+      i.name = 'Jones'
+      i.save!
     end
---use the ! version to raise an exception if the created object doesn't pass validation
--find_or_initialize_by
---checks for records with specified attribute(s) and if none exists the record(s) are added for them using the [model].new method (so it is not saved)
--views
---check this site for info on wrapping a view : https://rollout.io/blog/speed-up-activerecord/
--bulk inserts
---use a gem like activerecord-import
--queing
---Learn about ActiveJob: https://rollout.io/blog/how-to-use-rails-active-job/
---deferred email sending
---image processing
---processing upload/import files
---generating reports
--handling multiple columns that reference the same table in a given record
---ex a post has an author and editor that are both users
---https://www.theodinproject.com/courses/ruby-on-rails/lessons/active-record-associations?ref=lnav
+    ```
+  or
+    ```
+    item = Item.first
+    item.with_lock do
+      # This block is called within a transaction,
+      # item is already locked.
+      item.increment!(:views)
+    end
+    ```
+- as
+  - using the as notation in your sql automatically creates an attribute in the returned object
+  - e.g. Article.select("articles.*, count(comments.id) as comment_count").joins(:comments).group(:article_id)
+- joins
+  - `.joins` for inner joins e.g. Author.joins("INNER JOIN posts ON posts.author_id = authors.id AND posts.published = 't'")
+  - `.left_outers_joins` for outer joins
+  - can use keys as join values e.g. Article.joins(:categories, :comments)
+  - can nest e.g. Articles.joins(comments: :guest) -> Article inner join comments inner join guests
+  - can deeply nest e.g Category.joins(articles: [{comment: :guest}, :tags])
+  - where clause with join e.g. Articles.joins(:comments).where(comments: {created_at: time_range})
+- enums
+  - can specify an enum for a model
+    ```
+    class Book < ApplicationRecord
+      enum availability: [:available, :unavailable]
+    end
+    ```
+  - query this using .[enum_name] e.g. new_book.availability?
+  - set using the ! notation e.g. new_book.unavailable!
+- `find_or_create_by`
+  - checks for records with specified attribute(s) and if none exists the record(s) are added for them using the [model].create method (which auto saves)
+  - use `create_with` to override defaults e.g. Client.create_with(locked: false).find_or_create_by(first_name: Andy)
+    - or use a block
+      ```
+      Client.find_or_create_by(first_name: 'Andy') do |c|
+        c.locked = false
+      end
+      ```
+  - use the ! version to raise an exception if the created object doesn't pass validation
+- `find_or_initialize_by`
+  - checks for records with specified attribute(s) and if none exists the record(s) are added for them using the [model].new method (so it is not saved)
+- views
+  - check this site for info on wrapping a view : https://rollout.io/blog/speed-up-activerecord/
+- bulk inserts
+  - use a gem like activerecord-import
+- queing
+  - Learn about ActiveJob: https://rollout.io/blog/how-to-use-rails-active-job/
+  - deferred email sending
+  - image processing
+  - processing upload/import files
+  - generating reports
+- handling multiple columns that reference the same table in a given record
+  - ex a post has an author and editor that are both users
+  - https://www.theodinproject.com/courses/ruby-on-rails/lessons/active-record-associations?ref=lnav
 
 
